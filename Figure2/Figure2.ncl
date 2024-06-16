@@ -210,6 +210,7 @@ begin
     mpres@mpMinLonF = minlon
     mpres@mpMaxLonF = maxlon
     mpres@gsnMaskLambertConformal = True
+    mpres@gsnMaskLambertConformalOutlineOn = False
 
     mpres@mpDataSetName            = "/storage/aemolcore02/jungu/Data/Earth..4/Earth..4"
     mpres@mpDataBaseVersion        = "MediumRes"
