@@ -273,17 +273,17 @@ begin
     hgtres@cnLineLabelFontHeightF = 0.014
     hgtres@cnExplicitLineLabelsOn  = True
     hgtres@cnLineLabelInterval = 1
-    hgtres@cnLineLabelFontColor = "whitesmoke"
-    hgtres@cnLineLabelBackgroundColor = -1
+    hgtres@cnLineLabelFontColor = "white"
+    ;hgtres@cnLineLabelBackgroundColor = "white"
     hgtres@cnMonoLineThickness   = True;Important
     ;hgtres@cnLineThicknesses = (/2.5,3,2.5,2.5,2.5/)*N_res
     hgtres@cnLineThicknessF = 3.*N_res
     hgtres@cnMonoLineColor  = True;Important
-    hgtres@cnLineColor = "whitesmoke";"whitesmoke"
+    hgtres@cnLineColor = "white";"whitesmoke"
     hgtres@cnMonoLineDashPattern = True
     hgtres@cnLineDashPatterns = 0
     hgtres@cnInfoLabelOn = False
-    hgtres@cnLineLabelPlacementMode = "Constant"
+    hgtres@cnLineLabelPlacementMode = "constant"
 
     hgtres@sfXArray = lonCell
     hgtres@sfYArray = latCell
