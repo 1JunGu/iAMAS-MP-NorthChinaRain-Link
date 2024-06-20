@@ -281,7 +281,7 @@ begin
     vcres@vcRefAnnoString2On        = True
     vcres@vcRefAnnoString2          = "~F25~g/kg m/s"
     vcres@vcRefAnnoPerimOn          = False
-    vcres@vcRefAnnoOrthogonalPosF   = -0.189
+    vcres@vcRefAnnoOrthogonalPosF   = -0.19
     vcres@vcRefAnnoParallelPosF     = 0.998
     vcres@vcRefAnnoBackgroundColor  = "white"
 
