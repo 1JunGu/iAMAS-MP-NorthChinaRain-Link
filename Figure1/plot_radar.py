@@ -126,9 +126,9 @@ def example_data():
         #['Rainfall duration', 'Area with rainfall above 50mm', 'Area with rainfall above 100mm', 'Maximum rainfall event', 'Spatially averaged rainfall amount across the region', 'Peak hourly rainfall'],
         ['Peak hourly rainfall', 'Maximum event rainfall', 'Area with rainfall above 100mm', 'Rainfall duration', 'Area with rainfall above 200mm', 'Spatially average rainfall amount across the region'],
         ('', [
-            [1.003, 0.541, 0.0495148*5, 0.20, 0.11681, 0.364731],
-            [0.568, 0.4537, 0.204464*5, 0.55, 0.376662, 0.944137],
-            [1.183, 1.003, 0.181292*5, 0.83, 0.84852, 1.0209]]),
+            [1.003*0.7, 0.460, 0.209 * 0.6 , 0.16, 0.08, 0.341*0.6],
+            [1.397*0.7, 0.689, 1.469 * 0.6 , 0.56, 0.357, 1.084*0.6],
+            [1.183*0.7, 1.003, 1.504 * 0.6, 0.84, 0.825, 1.451*0.6]]),
     ]
     return data
 
