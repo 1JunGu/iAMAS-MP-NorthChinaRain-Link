@@ -371,22 +371,27 @@ begin
     item_y2 = 0.1
     item_y3 = 0.08
     item_y4 = 0.06
+    item_y5 = 0.04
 
     lnres@gsLineColor = "Violetred"
     gsn_polyline_ndc(wks, (/ln_x,ln_x2/), (/item_y1,item_y1/), lnres)
-    gsn_text_ndc(wks, "OBS", ln_x2+0.02, item_y1, txres)
+    gsn_text_ndc(wks, "CTL", ln_x2+0.02, item_y1, txres)
 
     lnres@gsLineColor = "goldenrod"
     gsn_polyline_ndc(wks, (/ln_x,ln_x2/), (/item_y2,item_y2/), lnres)
     gsn_text_ndc(wks, "RM_TH", ln_x2+0.02, item_y2, txres)
 
-    lnres@gsLineColor = "turquoise"
+    lnres@gsLineColor = "forestgreen"
     gsn_polyline_ndc(wks,  (/ln_x,ln_x2/), (/item_y3,item_y3/), lnres)
-    gsn_text_ndc(wks, "RM_T", ln_x2+0.02, item_y3, txres)
+    gsn_text_ndc(wks, "RM_Q", ln_x2+0.02, item_y3, txres)
+
+    lnres@gsLineColor = "turquoise"
+    gsn_polyline_ndc(wks,  (/ln_x,ln_x2/), (/item_y4,item_y4/), lnres)
+    gsn_text_ndc(wks, "RM_T", ln_x2+0.02, item_y4, txres)
 
     lnres@gsLineColor = "darkslateblue"
-    gsn_polyline_ndc(wks, (/ln_x,ln_x2/), (/item_y4,item_y4/), lnres)
-    gsn_text_ndc(wks, "RM_T_NO_MP", ln_x2+0.02, item_y4, txres)
+    gsn_polyline_ndc(wks, (/ln_x,ln_x2/), (/item_y5,item_y5/), lnres)
+    gsn_text_ndc(wks, "RM_T_NO_MP", ln_x2+0.02, item_y5, txres)
 
 
     resP = True
