@@ -1,3 +1,6 @@
 # Data
 data/
-
+# hidden directories
+*/others/
+# old version
+*_old/
