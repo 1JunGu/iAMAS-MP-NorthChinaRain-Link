@@ -3,10 +3,10 @@ begin
 ;---Processing----------------
     box_minlat  = 35
     box_maxlat  = 41
-    box_minlon  = 112
-    box_maxlon  = 117
+    box_minlon  = 112.5
+    box_maxlon  = 117.5
 
-    data_path = "../data/Figure1/"
+    data_path = "../data/CHM/"
     CHM_fi = addfile(data_path + "CHM_PRE_0.1dg_19612022.nc", "r")
     years = CHM_fi->years
     hours = CHM_fi->time
@@ -69,6 +69,7 @@ begin
     ;    nyear_pre(iyear) = wgt_areaave2(pre_select_avg_3day,wgt({box_minlat:box_maxlat},{box_minlon:box_maxlon}),0)
     ;end do
 
+    data_path = "../data/CLDAS/"
     CLDAS_fi = addfile(data_path + "regrid/CLDAS_Doksuri_stod_CHM.nc","r")
     rain_3day = CLDAS_fi->rain_3day
     ;printVarSummary(rain_3day)

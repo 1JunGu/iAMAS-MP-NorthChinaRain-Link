@@ -11,18 +11,20 @@ begin
     wks_type@wkWidth  = 1024*N_res;
     wks_type@wkHeight = 1024*N_res
     ;wks_type@wkPDFResolution = 6000
-    wks = gsn_open_wks(wks_type, "./Figure1b")
+    wks = gsn_open_wks(wks_type, "./Figure1c")
 
     res = True
     res@gsnDraw = False
     res@gsnFrame= False
     res@gsnMaximize  = False
     res@gsnScale = True
-    res@gsnStringFont = 25
-    res@gsnLeftString            = "(b)"
-    res@gsnLeftStringFontHeightF = 0.02
+    res@gsnLeftString            = "~F26~c"
+    res@gsnLeftStringFontHeightF = 0.03
+    res@gsnCenterStringFontHeightF = 0.024
+    res@gsnCenterString = "~F26~Temporal precipitation anomaly"
     res@gsnRightString            = ""
     res@gsnLeftStringOrthogonalPosF = 0.005
+    res@gsnCenterStringOrthogonalPosF = 0.005
 
     res@vpHeightF = 0.8
     res@vpWidthF  = 0.8
@@ -64,12 +66,12 @@ begin
     res@tmXBMinorValues = ispan(1961,2023,1)
 
 
-    res@trYMinF = -31
-    res@trYMaxF = 131
+    res@trYMinF = -32
+    res@trYMaxF = 136
     res@tmYLMode = "Explicit"
     res@tmYLValues = ispan(-20,120,20)
     res@tmYLLabels = res@tmYLValues
-    res@tmYLMinorValues = ispan(-30,130,5)
+    res@tmYLMinorValues = ispan(-30,136,5)
     res@tiYAxisFont = 25
     res@tiYAxisFontHeightF = 0.022
 
@@ -86,9 +88,10 @@ begin
     bres = res
     bres@tiYAxisSide = "Left"
     bres@tiYAxisString = "Precipitation anomaly (mm)"
-    cmap = read_colormap_file("MPL_PRGn")
-    above_c = cmap(64+50,:)
-    below_c = cmap(64-50,:)
+    ;cmap = read_colormap_file("MPL_PRGn")
+    cmap = read_colormap_file("MPL_BrBG")
+    above_c = cmap(117,:)
+    below_c = cmap(20,:)
     bres@gsnYRefLine = 0.
     bres@gsnXYBarChart = True
     bres@gsnAboveYRefLineBarColors = above_c

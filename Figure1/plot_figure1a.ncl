@@ -1,7 +1,7 @@
 begin
     print_clock("start")
 ;---Processing----------------
-    data_path = "../data/Figure1/"
+    data_path = "../data/CHM/"
     CHM_fi = addfile(data_path + "CHM_PRE_0.1dg_19612022.nc", "r")
     years = CHM_fi->years
     hours = CHM_fi->time
@@ -21,6 +21,7 @@ begin
     pre_avg_3day = pre_avg*3
     copy_VarCoords(pre(0,:,:),pre_avg_3day)
 
+    data_path = "../data/CLDAS/"
     CLDAS_fi = addfile(data_path + "regrid/CLDAS_Doksuri_stod_CHM.nc","r")
     rain_3day = CLDAS_fi->rain_3day
     rain_3day = where(ismissing(rain_3day),-99.9,rain_3day)
@@ -46,15 +47,20 @@ begin
     wks_type@wkHeight = 1024*N_res
     wks = gsn_open_wks(wks_type, "./Figure1a")
 
-    cnlevels = fspan(-50,450,51)
+    cnlevels = fspan(-50,550,61)
 
     ;rain_cmap = read_colormap_file("rainfall1")
     ;colors = rain_cmap
-    rain_cmap =  read_colormap_file("MPL_PRGn")
+    ;rain_cmap =  read_colormap_file("MPL_PRGn")
+    ;printVarSummary(rain_cmap)
+    ;colors = new((/52,4/),"float")
+    ;colors(0:5,:) = rain_cmap(10:60:10,:)
+    ;colors(6:51,:) = rain_cmap(75:120,:)
+    rain_cmap =  read_colormap_file("MPL_BrBG")
     printVarSummary(rain_cmap)
-    colors = new((/52,4/),"float")
+    colors = new((/62,4/),"float")
     colors(0:5,:) = rain_cmap(10:60:10,:)
-    colors(6:51,:) = rain_cmap(75:120,:)
+    colors(6:61,:) = rain_cmap(72:127,:)
     ;colors(6:11,:) = rain_cmap(64:69,:)
     ;colors(12:17,:) = rain_cmap(72:77,:)
     ;colors(18:23,:) = rain_cmap(80:85,:)
@@ -70,11 +76,12 @@ begin
     res@gsnFrame= False
     res@gsnAddCyclic = False
     res@gsnMaximize  = False
-    res@gsnStringFont = 25
-    res@gsnLeftString            = "(a) Precipitation anomaly (mm)"
-    res@gsnLeftStringFontHeightF = 0.02
+    res@gsnLeftString            = "~F26~a"
+    res@gsnLeftStringFontHeightF = 0.03
+    res@gsnCenterString = "~F26~Spatial precipitation anomaly"
     res@gsnRightString            = ""
     res@gsnLeftStringOrthogonalPosF = 0.005
+    res@gsnCenterStringOrthogonalPosF = 0.005
 
     res@vpHeightF = 0.8
     res@vpWidthF  = 0.8
@@ -90,7 +97,7 @@ begin
     mpres@mpMinLonF = minlon
     mpres@mpMaxLonF = maxlon
 
-    mpres@mpDataSetName     = "/storage/aemolcore02/jungu/Data/Earth..4/Earth..4"
+    mpres@mpDataSetName     = "$HOME/.config/NCL/database/Earth..4"
     mpres@mpDataBaseVersion = "MediumRes"
     ;mpres@mpAreaMaskingOn = True
     mpres@mpOutlineSpecifiers        = (/"China","China:Provinces"/)
@@ -174,10 +181,10 @@ begin
     lbres@lbLabelFontHeightF = 0.017
     lbres@lbLabelAlignment   = "InteriorEdges"
     lbres@lbTitleJust = "TopCenter"
-    lbres@lbTitleFontHeightF = 0.014
+    lbres@lbTitleFontHeightF = 0.017
     lbres@lbTitleOffsetF = 0.2
     lbres@lbTitleExtentF = 0.25
-    lbres@lbTitleString = "";optional
+    lbres@lbTitleString = "~F25~3-day accumulated rainfall anomaly (mm) ";optional
     lbres@lbTitlePosition = "Bottom"
     lbres@lbLabelStride = 5
     nboxes = dimsizes(colors)
@@ -190,8 +197,8 @@ begin
     plres@gsLineThicknessF  = 4*N_res
     plres@gsLineColor = "Black"
 
-    box_lat = (/35,35,41.5,41.5,35/)
-    box_lon = (/112,117,117,112,112/)
+    box_lat = (/35,35,41,41,35/)
+    box_lon = (/112.5,117.5,117.5,112.5,112.5/)
     plres@gsLineThicknessF = 10
     box = gsn_add_polyline(wks, contour, box_lon, box_lat, plres)
 
