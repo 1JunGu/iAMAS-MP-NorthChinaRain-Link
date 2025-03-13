@@ -120,7 +120,7 @@ end
 begin
     print_clock("start")
 ;---read circulations for plot a
-    data_path = "../data/Figure2/"
+    data_path = "../data/reanalysis/ERA5/"
     zuvq_fi = addfile(data_path + "zuvq.nc","r")
 
     var_list = (/"z","u","v","q"/) 
@@ -142,19 +142,23 @@ begin
     w_s = dim_avg_n_Wrap(w_fi->w(:,0,:,:),0)
     w_s = w_s*1e1
 ;---read observation 
-    data_path = "../data/Figure2/rainfall/"
+    data_path = "../data/CLDAS/"
     obs_fi = addfile(data_path + "CLDAS_Doksuri.nc" ,"r")
     rain_obs = obs_fi->rain_3day
 ;---read simulations 
-    rain_sim = new((/6,785410/),double)
-    case_list = (/"CTL","RM_THQ","RM_Q","RM_TH","RM_T_NO_MP","RM_T"/)
-    do icase = 0, 5
-        fi_rainc = addfile(data_path + case_list(icase) +  "/rainc_hr.nc","r")
-        rainc_hr = fi_rainc->rainc_hr
-        fi_rainnc = addfile(data_path + case_list(icase) +  "/rainnc_hr.nc","r")
-        rainnc_hr = fi_rainnc->rainnc_hr
-        rain_sim(icase,:) = (rainc_hr + rainnc_hr)*72
+    rain_sim = new((/5,785410/),double)
+    ;case_list = (/"CTL","RM_THQ","RM_Q","RM_TH","RM_T_NO_MP","RM_T"/)
+    data_path = "../data/simulation/0728_12/"
+    case_list = (/"CTL","RM_THQ","RM_Q","RM_T","RM_T_MP"/)
+    do icase = 0, 4, 4
+        fi_rain = addfile(data_path + case_list(icase) +  "/rain_mpas.nc","r")
+        rain_sim(icase,:) = fi_rain->rain_3day
     end do
+    do icase = 1, 3
+        fi_rain = addfile(data_path + case_list(icase) +  "/rain_hr.nc","r")
+        rain_sim(icase,:) = fi_rain->rain_hr*72
+    end do
+
     static_fi = addfile(data_path + "../cell_fill.nc","r")
     latCell = static_fi->latCell
     lonCell = static_fi->lonCell
@@ -174,23 +178,35 @@ begin
     wks_type = "png"
     wks_type@wkWidth  = 1024*N_res;
     wks_type@wkHeight = 1024*N_res
-    wks = gsn_open_wks(wks_type, "./Figure2")
+    wks = gsn_open_wks(wks_type, "./Figure2_new")
 
-    rain_cnlevels = (/0.1, 1, 5, 10, 25., 50,75, 100.,150,200,300,400,500,600,700/);16 colors
+    rain_cnlevels = (/0.1, 1, 5, 10, 25., 50,75, 100.,150,200,300,400,500,600/);16 colors
     rain_cmap = read_colormap_file("precip2_17lev")
-    rain_colors = new((/16,4/),float)
+    rain_colors = new((/15,4/),float)
     rain_colors(0,:) = rain_cmap(0,:)
-    rain_colors(1:15,:) = rain_cmap(3:17,:)
+    rain_colors(1:14,:) = rain_cmap(3:16,:)
+
+    rain_diff_cmap =  read_colormap_file("MPL_BrBG")
+    rain_diff_colors = new((/52,4/),"float")
+    rain_diff_colors = rain_diff_cmap(12:114:2,:)
+    rain_diff_levels = fspan(-300,300,51); rain difference
+
+    do icase = 1, 4
+        rain_sim(icase,:) = rain_sim(0,:) - rain_sim(icase,:)
+    end do
+    ;diff
 
     res = True
     res@gsnDraw = False
     res@gsnFrame= False
     res@gsnAddCyclic = False
     res@gsnMaximize  = True
-    res@gsnStringFont = 25
+    res@gsnStringFont = 26
     res@gsnRightString  = ""
-    res@gsnLeftStringFontHeightF = 0.022
-    res@gsnLeftStringOrthogonalPosF = 0.035
+    res@gsnLeftStringFontHeightF = 0.03
+    res@gsnCenterStringFontHeightF = 0.017
+    res@gsnLeftStringOrthogonalPosF = 0.04
+    res@gsnCenterStringOrthogonalPosF = 0.035
     ;res@gsnRightStringOrthogonalPosF = 0.02
 
     ;lres@vpHeightF = 0.8
@@ -212,7 +228,7 @@ begin
     mpres@gsnMaskLambertConformal = True
     mpres@gsnMaskLambertConformalOutlineOn = False
 
-    mpres@mpDataSetName            = "/storage/aemolcore02/jungu/Data/Earth..4/Earth..4"
+    mpres@mpDataSetName     = "$HOME/.config/NCL/database/Earth..4"
     mpres@mpDataBaseVersion        = "MediumRes"
     ;mpres@mpAreaMaskingOn = True
     mpres@mpOutlineSpecifiers        = (/"China","China:Provinces"/)
@@ -266,8 +282,8 @@ begin
     ;mpres@tmYLMinorValues = ispan(26,45,1)
 
     ;-------Plot---------
-    plot = new(8,graphic)
-    Leftstring_list = (/"(a) ", "(b) ", "(c) ", "(d) ", "(e) ", "(f) ", "(g) ", "(h) "/)
+    plot = new(6,graphic)
+    Leftstring_list =  (/"a ", "b ", "c ", "d ", "e ", "f "/)
 
     shres = res
     shres@cnFillDrawOrder = "PostDraw"
@@ -322,12 +338,12 @@ begin
     vcres@vcRefAnnoParallelPosF     = 0.99
     vcres@vcRefAnnoBackgroundColor  = "white"
 
-    sdres@gsnLeftString = Leftstring_list(0) + "500-hPa moisture flux and vertical speed"
-    plot(0) = gsn_csm_contour_map(wks,w_s,sdres)
-    contour = gsn_csm_contour(wks,h_s({minlat:maxlat},{minlon:maxlon}),shres)
-    vector  = gsn_csm_vector(wks,qu({minlat+0.25:maxlat-0.25},{minlon+0.25:maxlon-0.25}),qv({minlat+0.25:maxlat-0.25},{minlon+0.25:maxlon-0.25}),vcres)
-    overlay(plot(0),vector)
-    overlay(plot(0),contour)
+    ;sdres@gsnLeftString = Leftstring_list(0) + "500-hPa moisture flux and vertical speed"
+    ;plot(0) = gsn_csm_contour_map(wks,w_s,sdres)
+    ;contour = gsn_csm_contour(wks,h_s({minlat:maxlat},{minlon:maxlon}),shres)
+    ;vector  = gsn_csm_vector(wks,qu({minlat+0.25:maxlat-0.25},{minlon+0.25:maxlon-0.25}),qv({minlat+0.25:maxlat-0.25},{minlon+0.25:maxlon-0.25}),vcres)
+    ;overlay(plot(0),vector)
+    ;overlay(plot(0),contour)
 
     cnres = mpres
     cnres@cnFillDrawOrder = "Draw"
@@ -342,34 +358,45 @@ begin
     cnres@cnLevels        = rain_cnlevels
     cnres@cnFillColors    = rain_colors
     cnres@lbLabelBarOn    = False
-    do icase =1,7
-        if (icase.eq.1) then
-            cnres@gsnLeftString = Leftstring_list(icase) + "Observation"
+    do icase =0,5
+        if (icase.eq.0) then
+            cnres@gsnLeftString = Leftstring_list(icase)
+            cnres@gsnCenterString = "Observation"
             cnres@cnRasterSmoothingOn = True
             plot(icase) = gsn_csm_contour_map(wks,rain_obs,cnres)
-        else
-            cnres@gsnLeftString = Leftstring_list(icase)  + case_list(icase-2)
+        else if (icase.eq.1)
+            cnres@gsnLeftString = Leftstring_list(icase)
+            cnres@gsnCenterString = case_list(icase-1)
             ;cnres@cnRasterSmoothingOn = True
             cnres@trGridType = "TriangularMesh"
             cnres@sfXArray := lonCell
             cnres@sfYArray := latCell
-            ;cnres@sfXCellBounds = lonvoc
-            ;cnres@sfYCellBounds = latvoc
-            plot(icase) = gsn_csm_contour_map(wks,rain_sim(icase-2,:),cnres)
+            plot(icase) = gsn_csm_contour_map(wks,rain_sim(icase-1,:),cnres)
+        else
+            cnres@gsnLeftString = Leftstring_list(icase)
+            cnres@gsnCenterString =  "CTL-minus-" + case_list(icase-1)
+            ;cnres@cnRasterSmoothingOn = True
+            cnres@trGridType = "TriangularMesh"
+            cnres@sfXArray := lonCell
+            cnres@sfYArray := latCell
+            cnres@cnLevels        := rain_diff_levels
+            cnres@cnFillColors    := rain_diff_colors
+            plot(icase) = gsn_csm_contour_map(wks,rain_sim(icase-1,:),cnres)
+        end if
         end if
     end do
-    do icase =0,7
+    do icase =0,5
         lat_spacing  = 5
         lon_spacing  = 5
-        add_lc_labels(wks,plot(icase),minlat,maxlat,minlon,maxlon,lat_spacing,lon_spacing)
+        add_lc_labels(wks,plot(icase),minlat,maxlat,minlon,maxlon,lat_spacing,lon_spacing) ; Important
     end do
 
 ;Create individual label for (a)
     lbresa = True
-    lbresa@vpXF = 0.2
-    lbresa@vpYF = 0.99
-    lbresa@vpWidthF = 0.03
-    lbresa@vpHeightF= 0.2
+    lbresa@vpXF = 0.05
+    lbresa@vpYF = 0.69
+    lbresa@vpWidthF = 0.27
+    lbresa@vpHeightF= 0.04
 
     lbresa@lbPerimOn = False
     lbresa@lbBoxLinesOn = False
@@ -379,13 +406,13 @@ begin
     lbresa@lbMonoFillPattern = True
     lbresa@lbLabelFontHeightF = 0.010
     lbresa@lbLabelAlignment   = "InteriorEdges"
-    lbresa@lbLabelPosition = "Left"
-    lbresa@lbOrientation = "Vertical"
-    lbresa@lbTitlePosition = "Left"
-    lbresa@lbTitleDirection = "Across"
-    lbresa@lbTitleAngleF = 270.
+    ;lbresa@lbLabelPosition = "Left"
+    lbresa@lbOrientation = "Horizontal"
+    lbresa@lbTitlePosition = "Bottom"
+    ;lbresa@lbTitleDirection = "Across"
+    ;lbresa@lbTitleAngleF = 270.
     ;lbres@lbTitleJust = "TopCenter"
-    lbresa@lbTitleFontHeightF = 0.010
+    lbresa@lbTitleFontHeightF = 0.014
     lbresa@lbTitleOffsetF = 0.2
     lbresa@lbTitleExtentF = 0.25
     lbresa@lbTitleString = "~F25~Vertical speed at 500 hPa (m/s)";optional
@@ -393,52 +420,96 @@ begin
     nboxes = dimsizes(sd_colors)
     labels = "~F25~"+sd_cnlevels
     lbid_wspd = gsn_create_labelbar(wks,nboxes,labels,lbresa)
-    draw(lbid_wspd)
+    ;draw(lbid_wspd)
 ;Create common label
     lbres = True
     lbres@vpXF = 0.23
-    lbres@vpYF = 0.05
+    lbres@vpYF = 0.68
     lbres@vpWidthF = 0.54
-    lbres@vpHeightF= 0.05
+    lbres@vpHeightF= 0.04
 
     lbres@lbPerimOn = False
-    lbres@lbBoxLinesOn = True
-    lbres@lbBoxLineThicknessF = 4.0*N_res
+    lbres@lbBoxLinesOn = False
     lbres@lbBoxSeparatorLinesOn = False
-    lbres@lbOrientation = "Horizontal"
+    lbres@lbBoxLineThicknessF = 4.0*N_res
     lbres@lbFillColors  := rain_colors
     lbres@lbMonoFillPattern = True
-    lbres@lbLabelFontHeightF = 0.012
+    lbres@lbLabelFontHeightF = 0.010
     lbres@lbLabelAlignment   = "InteriorEdges"
-    lbres@lbTitleJust = "TopCenter"
+    lbres@lbOrientation = "Horizontal"
+    lbres@lbTitlePosition = "Bottom"
+    ;lbres@lbTitleJust = "TopCenter"
+    lbres@lbTitleFontHeightF = 0.014
     lbres@lbTitleOffsetF = 0.2
     lbres@lbTitleExtentF = 0.25
-    lbres@lbTitleFontHeightF = 0.014
     lbres@lbTitleString = "~F25~3-day accumulated precipitation (mm)";optional
-    lbres@lbTitlePosition = "Bottom"
     lbres@lbLabelStride = 1
     nboxes := dimsizes(rain_colors)
     labels := "~F25~"+rain_cnlevels
     lbid_rain = gsn_create_labelbar(wks,nboxes,labels,lbres)
     draw(lbid_rain)
+;Create common label
+    lbres1 = True
+    lbres1@vpXF = 0.23
+    lbres1@vpYF = 0.04
+    lbres1@vpWidthF = 0.54
+    lbres1@vpHeightF= 0.04
+
+    lbres1@lbPerimOn = False
+    lbres1@lbBoxLinesOn = False
+    lbres1@lbBoxSeparatorLinesOn = False
+    lbres1@lbBoxLineThicknessF = 4.0*N_res
+    lbres1@lbFillColors  := rain_diff_colors
+    lbres1@lbMonoFillPattern = True
+    lbres1@lbLabelFontHeightF = 0.010
+    lbres1@lbLabelAlignment   = "InteriorEdges"
+    lbres1@lbOrientation = "Horizontal"
+    lbres1@lbTitlePosition = "Bottom"
+    ;lbres1@lbTitleJust = "TopCenter"
+    lbres1@lbTitleFontHeightF = 0.014
+    lbres1@lbTitleOffsetF = 0.2
+    lbres1@lbTitleExtentF = 0.25
+    lbres1@lbTitleString = "~F25~3-day accumulated precipitation differences (mm)";optional
+    lbres1@lbLabelStride = 5
+    nboxes := dimsizes(rain_diff_colors)
+    labels := "~F25~"+rain_diff_levels
+    lbid_rain_diff = gsn_create_labelbar(wks,nboxes,labels,lbres1)
+    draw(lbid_rain_diff)
 
     box_lat = (/35,35,41,41,35/)
-    box_lon = (/112,117,117,112,112/)
+    box_lon = (/112.5,117.5,117.5,112.5,112.5/)
     plres   = True
     plres@gsLineDashPattern = 0
     plres@gsLineThicknessF  = 10
     plres@gsLineColor = "Black"
-    ;box = gsn_add_polyline(wks, contour, box_lon, box_lat, plres)
+    box0 = gsn_add_polyline(wks, plot(0), box_lon, box_lat, plres)
+    box1 = gsn_add_polyline(wks, plot(1), box_lon, box_lat, plres)
 
     resP = True
+    resP@gsnFrame = False
     resP@gsnPanelLabelBar = False
     resP@gsnMaximize = True
     resP@gsnPanelRowSpec = True
     resP@gsnPanelCenter = True
-    resP@gsnPanelYWhiteSpacePercent = 2
-    resP@gsnPanelBottom = 0.06
+    resP@gsnPanelXWhiteSpacePercent = 5
+    resP@gsnPanelYWhiteSpacePercent = 5
+    resP@gsnPanelBottom = 0.7
     ;resP@gsnPanelDebug = True
+    gsn_panel(wks,plot(0:1),(/2/),resP)
+
+    resP1 = True
+    resP1@gsnFrame = False
+    resP1@gsnPanelLabelBar = False
+    resP1@gsnMaximize = True
+    resP1@gsnPanelRowSpec = True
+    resP1@gsnPanelCenter = True
+    resP1@gsnPanelXWhiteSpacePercent = 5
+    resP1@gsnPanelYWhiteSpacePercent = 5
+    resP1@gsnPanelTop = 0.64
+    resP1@gsnPanelBottom = 0.06
+    ;resP@gsnPanelDebug = True
+    gsn_panel(wks,plot(2:5),(/2,2/),resP1)
     ;drawNDCGrid(wks)
-    gsn_panel(wks,plot,(/2,2,2,2/),resP)
+    frame(wks)
     print_clock("End")
 end
