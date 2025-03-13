@@ -3,13 +3,13 @@ procedure read_series(path:string,exp_name:string,xp:numeric,yp:numeric)
 local series_array
 begin
     print("read " + path)
-    series_1 = asciiread(path + "/" + exp_name + "_0728_00_series.txt", -1, "double")
-    series_2 = asciiread(path + "/" + exp_name + "_0728_01_series.txt", -1, "double")
-    series_3 = asciiread(path + "/" + exp_name + "_0728_02_series.txt", -1, "double")
-    series_4 = asciiread(path + "/" + exp_name + "_0728_03_series.txt", -1, "double")
-    series_5 = asciiread(path + "/" + exp_name + "_0728_04_series.txt", -1, "double")
-    series_6 = asciiread(path + "/" + exp_name + "_0728_05_series.txt", -1, "double")
-    series_7 = asciiread(path + "/" + exp_name + "_0728_06_series.txt", -1, "double")
+    series_1 = asciiread(path + "/" + exp_name + "_0728_09_series.txt", -1, "double")
+    series_2 = asciiread(path + "/" + exp_name + "_0728_10_series.txt", -1, "double")
+    series_3 = asciiread(path + "/" + exp_name + "_0728_11_series.txt", -1, "double")
+    series_4 = asciiread(path + "/" + exp_name + "_0728_12_series.txt", -1, "double")
+    series_5 = asciiread(path + "/" + exp_name + "_0728_13_series.txt", -1, "double")
+    series_6 = asciiread(path + "/" + exp_name + "_0728_14_series.txt", -1, "double")
+    series_7 = asciiread(path + "/" + exp_name + "_0728_15_series.txt", -1, "double")
 
     series_array = new((/7,72/),"double")
 
@@ -33,33 +33,34 @@ begin
 end
 
 begin
-    rain_3day_obs = asciiread("../data/Figure3/rainfall/CLDAS_series.txt",-1,"double")
-    rain_3day_CTL = asciiread("../data/Figure3/rainfall/CTL_series/CTL_ensemble_series.txt", -1, "double")
-    rain_3day_RM_THQ = asciiread("../data/Figure3/rainfall/RM_THQ_series/RM_THQ_ensemble_series.txt", -1, "double")
-    rain_3day_RM_TH = asciiread("../data/Figure3/rainfall/RM_TH_series/RM_TH_ensemble_series.txt", -1, "double")
-    rain_3day_RM_Q = asciiread("../data/Figure3/rainfall/RM_Q_series/RM_Q_ensemble_series.txt", -1, "double")
-    rain_3day_RM_T = asciiread("../data/Figure3/rainfall/RM_T_series/RM_T_ensemble_series.txt", -1, "double")
-    rain_3day_RM_T_NO_MP = asciiread("../data/Figure3/rainfall/RM_T_NO_MP_series/RM_T_NO_MP_ensemble_series.txt", -1, "double")
+    data_path = "/work/home/jungu/Work/iAMAS-237-Rainstorm-paper/data/"
+    rain_3day_obs = asciiread(data_path + "CLDAS/CLDAS_series.txt",-1,"double")
+    rain_3day_CTL = asciiread(data_path + "simulation/0728_12/CTL/rainfall_series/CTL_ensemble_0728_12_series.txt", -1, "double")
+    rain_3day_RM_T_MP = asciiread(data_path + "simulation/0728_12/RM_T_MP/rainfall_series/RM_T_MP_ensemble_0728_12_series.txt", -1, "double")
+    ;rain_3day_RM_TH = asciiread("../data/Figure3/rainfall/RM_TH_series/RM_TH_ensemble_series.txt", -1, "double")
+    ;rain_3day_RM_Q = asciiread("../data/Figure3/rainfall/RM_Q_series/RM_Q_ensemble_series.txt", -1, "double")
+    ;rain_3day_RM_T = asciiread("../data/Figure3/rainfall/RM_T_series/RM_T_ensemble_series.txt", -1, "double")
+    ;rain_3day_RM_T_NO_MP = asciiread("../data/Figure3/rainfall/RM_T_NO_MP_series/RM_T_NO_MP_ensemble_series.txt", -1, "double")
 
     rain_3day_array = new((/3,72/),"double")
     rain_3day_array(0,:) = rain_3day_obs
     rain_3day_array(1,:) = rain_3day_CTL
-    rain_3day_array(2,:) = rain_3day_RM_THQ
+    rain_3day_array(2,:) = rain_3day_RM_T_MP
     ;convert cumulative array to individual array
     rain_3day_obs_hour = rain_3day_obs
     rain_3day_obs_hour(1:71) = rain_3day_obs(1:71) - rain_3day_obs(0:70)
     rain_3day_CTL_hour = rain_3day_CTL
     rain_3day_CTL_hour(1:71) = rain_3day_CTL(1:71) - rain_3day_CTL(0:70)
-    rain_3day_RM_THQ_hour = rain_3day_RM_THQ
-    rain_3day_RM_THQ_hour(1:71) = rain_3day_RM_THQ(1:71) - rain_3day_RM_THQ(0:70)
+    rain_3day_RM_T_MP_hour = rain_3day_RM_T_MP
+    rain_3day_RM_T_MP_hour(1:71) = rain_3day_RM_T_MP(1:71) - rain_3day_RM_T_MP(0:70)
 
     rain_3day_CTL_xp =  new(144,double)
     rain_3day_CTL_yp =  new(144,double)
-    read_series("../data/Figure3/rainfall/CTL_series","CTL",rain_3day_CTL_xp,rain_3day_CTL_yp)
+    read_series(data_path + "/simulation/0728_12/CTL/rainfall_series/","CTL",rain_3day_CTL_xp,rain_3day_CTL_yp)
 
-    rain_3day_RM_THQ_xp =  new(144,double)
-    rain_3day_RM_THQ_yp =  new(144,double)
-    read_series("../data/Figure3/rainfall/RM_THQ_series","RM_THQ",rain_3day_RM_THQ_xp,rain_3day_RM_THQ_yp)
+    rain_3day_RM_T_MP_xp =  new(144,double)
+    rain_3day_RM_T_MP_yp =  new(144,double)
+    read_series(data_path + "/simulation/0728_12/RM_T_MP/rainfall_series/","RM_T_MP",rain_3day_RM_T_MP_xp,rain_3day_RM_T_MP_yp)
 
     N_res = 2
     wks_type = "png"
@@ -69,15 +70,15 @@ begin
 
     res = True
     res@vpWidthF = 0.7
-    res@vpHeightF = 0.64
+    res@vpHeightF = 0.4
     res@vpXF = 0.15
     res@vpYF = 0.9
     res@gsnDraw = False
     res@gsnFrame= False
     res@gsnMaximize  = False
-    res@gsnLeftStringFontHeightF = 0.018
+    res@gsnLeftStringFontHeightF = 0.03
     res@gsnRightString  = ""
-    res@gsnStringFont = 25
+    res@gsnStringFont = 26
     res@tiMainString =  ""
 
     res@tmXTOn = False
@@ -120,7 +121,8 @@ begin
     res@trXMaxF = 73.5
 
     bres = res
-    bres@gsnLeftString = "(a) Hourly and accumulated precipitation"
+    ;bres@gsnLeftString = "(a) Hourly and accumulated precipitation"
+    bres@gsnLeftString = ""
     bres@gsnLeftStringOrthogonalPosF = 0.005
     bres@gsnYRefLine           = 0.;very important for xyline colors
     bres@xyLineColor = "Violetred" ;
@@ -176,7 +178,7 @@ begin
     bres1@xyLineColor = "Black"
     plot_b1 = gsn_csm_xy(wks,time_series+0.01,rain_3day_obs_hour,bres1)
     bres1@xyLineColor = "dodgerblue"
-    plot_b2 = gsn_csm_xy(wks,time_series+0.02,rain_3day_RM_THQ_hour,bres1)
+    plot_b2 = gsn_csm_xy(wks,time_series+0.02,rain_3day_RM_T_MP_hour,bres1)
     anno_id2 = gsn_add_annotation(plot_xy, plot_b2, False)
     anno_id1 = gsn_add_annotation(plot_xy, plot_b1, False)
 
@@ -194,7 +196,7 @@ begin
     x_label_0 = 0.5 - ((24./74)*0.7)
     x_label_1 = 0.5
     x_label_2 = 0.5 + ((24./74)*0.7)
-    y_label = 0.38 - 0.19
+    y_label = 0.43
     gsn_text_ndc(wks,labels(0), x_label_0 , y_label ,txres)
     gsn_text_ndc(wks,labels(1), x_label_1 , y_label ,txres)
     gsn_text_ndc(wks,labels(2), x_label_2 , y_label ,txres)
@@ -205,10 +207,10 @@ begin
     plres@gsFillColor = colors(1)
     dum = gsn_add_polygon(wks, plot_xy@xy2, rain_3day_CTL_xp, rain_3day_CTL_yp, plres)
     plres@gsFillColor = colors(2)
-    dum2 = gsn_add_polygon(wks, plot_xy@xy2, rain_3day_RM_THQ_xp, rain_3day_RM_THQ_yp, plres)
+    dum2 = gsn_add_polygon(wks, plot_xy@xy2, rain_3day_RM_T_MP_xp, rain_3day_RM_T_MP_yp, plres)
 
     gres = True
-    gres@YPosPercent = 85.               ; expressed as %, 0->100, sets position of bottom border of legend
+    gres@YPosPercent = 88.               ; expressed as %, 0->100, sets position of bottom border of legend
                                         ;  when gres@Position="Bottom" (Default = 95.)
     gres@XPosPercent = 20.               ; expressed as %, 0->100, sets position of left border of legend
                                         ;  (Default = 5.)
@@ -225,7 +227,7 @@ begin
     lineres@LineLengthPercent = 5                        ; expressed as %, 0->100, length of line
 
     textres = True
-    textres@lgLabels ="~F25~" +  (/"OBS","CTL","RM_THQ"/) ; labels (req)
+    textres@lgLabels ="~F25~" +  (/"OBS","CTL","RM_T_MP"/) ; labels (req)
     textres@lgLabelFontHeights = (/0.015/)                           ; label font heights
     textres@lgLabelColors = colors
     ;textres@lgLabelOpacity = (/0.8/)                                     ; 0->1, label opacities
